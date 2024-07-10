@@ -16,9 +16,9 @@ else:
 # cap = cv.VideoCapture(0)
 # cap.set(3,1280)
 # cap.set(4,720)
-cap = cv.VideoCapture("myvenv/Chapter 6 Webcam YOLO/Videos/cars.mp4")
+cap = cv.VideoCapture("Chapter 6 Webcam YOLO/Videos/cars.mp4")
 
-mask = cv.imread("myvenv/Project-1 Car Count/mask.png")
+mask = cv.imread("Project-1 Car Count/mask.png")
 
 
 
@@ -35,7 +35,7 @@ classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "trai
               "teddy bear", "hair drier", "toothbrush"
               ]
 
-model = YOLO("myvenv/YOLO_Weights/yolov8l.pt")
+model = YOLO("YOLO_Weights/yolov8l.pt")
 currentArray = np.empty((0,5))
 tracker = Sort(max_age=20)
 
