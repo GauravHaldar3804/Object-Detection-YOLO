@@ -38,6 +38,8 @@ classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "trai
 model = YOLO("YOLO_Weights/yolov8l.pt")
 currentArray = np.empty((0,5))
 tracker = Sort(max_age=20)
+limits = [400,297,673,297]
+totalCount = []
 
 while True:
     succes , img = cap.read()
@@ -67,16 +69,24 @@ while True:
                 currentArray = np.array([x1,y1,x2,y2,conf])
                 detections = np.vstack((detections,currentArray))
 
+    cv.line(img,(limits[0],limits[1]),(limits[2],limits[3]),(0,0,255),5)
+
     resultsTracker = tracker.update(detections)
     for results in resultsTracker:
         x1 , y1 , x2 , y2 , id = results
         x1 , y1 , x2 , y2 ,id = int(x1) , int(y1) , int(x2) , int(y2) , int(id)
         cv.rectangle(img,(x1,y1),(x2,y2),(0,255,0),1)
         cvzone.putTextRect(img,f"{id}",(max(0,x1),max(35,y1)),scale=2,thickness=2,offset=3)
-        print(results)
+        cx , cy = x1 +(x2-x1)//2 ,y1+(y2-y1)//2
+        cv.circle(img,(cx,cy),5,(255,0,255),cv.FILLED)
 
+        if limits[0] < cx < limits[2] and limits[1]-20 < cy < limits[1]+20:
+            if totalCount.count(id)==0: 
+                totalCount.append(id)
+                cv.line(img,(limits[0],limits[1]),(limits[2],limits[3]),(0,255,0),5)
+        
 
-
+    cvzone.putTextRect(img,f"Count:{len(totalCount)}",(55,55))
 
     cv.imshow("Webcam",img)
     # cv.imshow("Mask",maskedImg)
