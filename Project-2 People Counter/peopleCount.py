@@ -16,9 +16,9 @@ else:
 # cap = cv.VideoCapture(0)
 # cap.set(3,1280)
 # cap.set(4,720)
-cap = cv.VideoCapture("Chapter 6 Webcam YOLO/Videos/cars.mp4")
+cap = cv.VideoCapture("Chapter 6 Webcam YOLO/Videos/people.mp4")
 
-mask = cv.imread("Project-1 Car Count/mask.png")
+mask = cv.imread("Project-2 People Counter/mask.png")
 
 
 
@@ -39,9 +39,13 @@ classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "trai
 model = YOLO("YOLO_Weights/yolov8l.pt")
 currentArray = np.empty((0,5))
 tracker = Sort(max_age=20)
-limits = [400,297,673,297]
-totalCount = []
-graphics = cv.imread("Project-1 Car Count/Graphics.png",cv.IMREAD_UNCHANGED)
+limitsUp = [103,161,296,161]
+limitsDown = [527,489,735,489]
+
+totalCountUp = []
+totalCountDown = []
+
+graphics = cv.imread("Project-2 People Counter/Graphics.png",cv.IMREAD_UNCHANGED)
 
 while True:
     succes , img = cap.read()
@@ -68,13 +72,15 @@ while True:
             cls = int(box.cls[0])
             currentClass = classNames[cls]
 
-            if currentClass == "car" and conf>0.3 or currentClass == "truck" or currentClass == "bus" or currentClass == "motorbike" :
+            if currentClass == "person" and conf>0.3  :
                 # cvzone.putTextRect(img,f"{currentClass} {conf}",(max(0,x1),max(35,y1)),scale=1,thickness=2,offset=3)
                 # cv.rectangle(img,(x1,y1),(x2,y2),(0,255,0),1)
                 currentArray = np.array([x1,y1,x2,y2,conf])
                 detections = np.vstack((detections,currentArray))
 
-    cv.line(img,(limits[0],limits[1]),(limits[2],limits[3]),(0,0,255),5)
+    cv.line(img,(limitsUp[0],limitsUp[1]),(limitsUp[2],limitsUp[3]),(0,0,255),5)
+    cv.line(img,(limitsDown[0],limitsDown[1]),(limitsDown[2],limitsDown[3]),(0,0,255),5)
+
 
     resultsTracker = tracker.update(detections)
     for results in resultsTracker:
@@ -85,15 +91,21 @@ while True:
         cx , cy = x1 +(x2-x1)//2 ,y1+(y2-y1)//2
         cv.circle(img,(cx,cy),5,(255,0,255),cv.FILLED)
 
-        if limits[0] < cx < limits[2] and limits[1]-20 < cy < limits[1]+20:
-            if totalCount.count(id)==0: 
-                totalCount.append(id)
-                cv.line(img,(limits[0],limits[1]),(limits[2],limits[3]),(0,255,0),5)
+        if limitsUp[0] < cx < limitsUp[2] and limitsUp[1]-20 < cy < limitsUp[1]+20:
+            if totalCountUp.count(id)==0: 
+                totalCountUp.append(id)
+                cv.line(img,(limitsUp[0],limitsUp[1]),(limitsUp[2],limitsUp[3]),(0,255,0),5)
+
+        if limitsDown[0] < cx < limitsDown[2] and limitsDown[1]-20 < cy < limitsDown[1]+20:
+            if totalCountDown.count(id)==0: 
+                totalCountDown.append(id)
+                cv.line(img,(limitsDown[0],limitsDown[1]),(limitsDown[2],limitsDown[3]),(0,255,0),5)
         
 
     # cvzone.putTextRect(img,f"Count:{len(totalCount)}",(55,55))
-    img[0:125,0:422] = graphics
-    cv.putText(img ,str(len(totalCount)),(255,100),cv.FONT_HERSHEY_PLAIN,8,(255,255,255),8)
+    img[174:174+136,705:705+575] = graphics
+    cv.putText(img ,str(len(totalCountUp)),(855,280),cv.FONT_HERSHEY_PLAIN,8,(0,255,0),8)
+    cv.putText(img ,str(len(totalCountDown)),(1125,280),cv.FONT_HERSHEY_PLAIN,8,(0,0,255),8)
 
     cv.imshow("Webcam",img)
     # cv.imshow("Mask",maskedImg)
