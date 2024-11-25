@@ -112,8 +112,7 @@ YOLO is a state-of-the-art object detection algorithm that enables fast and accu
 ## Setup Instructions
 1. Clone this repository:  
    ```bash
-   git clone https://github.com/your_username/yolo-object-detection.git
-   cd yolo-object-detection
+   git clone https://github.com/GauravHaldar3804/Object-Detection-YOLO.git
       
 2.Set up a Python virtual environment
 
